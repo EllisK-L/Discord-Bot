@@ -1,4 +1,7 @@
-import discord, time, math,random
+import discord
+import time
+import math
+import random
 from discord.ext import commands
 from discord.utils import get
 from pytube import YouTube
@@ -15,6 +18,7 @@ import youtube_dl
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common import by
+from Dalle import getImage
 
 
 name = "Plumpbot"
@@ -42,7 +46,7 @@ SaveFolder = "images"
 
 client = commands.Bot(command_prefix = "-")
 
-version = "1.4.2"
+version = "1.5.0"
 
 @client.event
 async def on_ready():
@@ -169,13 +173,6 @@ async def on_message(message):
 async def ping(ctx):
     print("bruh?")
     await ctx.send(f"{round(client.latency*1000)} ms")
-
-@client.command(aliases=["?"])
-async def question(ctx,*,question):
-    badWordEnds = ["YOU WILL DIE!","IT WILL EAT YOU!","YOU WILL EXPLODE!","YOU WILL GET OOOOOFED!"]
-    goodWordEnds = ["YOU WILL BE RICH!","YOU WILL GROW STRONGER!","IT WILL ALL END WELL!"]
-    responses = [f"NO DON'T {' '.join(question.split(' ')[2:]).replace('?','')} {random.choice(badWordEnds)}" , f"YES DO {' '.join(question.split(' ')[2:]).replace('?','')} {random.choice(goodWordEnds)}"]
-    await ctx.send(random.choice(responses))
 
 @client.command(pass_context=True)
 async def stop(ctx):
@@ -415,6 +412,12 @@ async def clear(ctx, number):
         mgs.append(x)
     await client.delete_messages(mgs)
 
+@client.command()
+async def dalle(ctx,*,text):
+    working_message = await ctx.send("working on creating: "+text)
+    image = await getImage(text)
+    await ctx.send(file=discord.File(image))
+    await working_message.delete()
 
 
 client.run("")
